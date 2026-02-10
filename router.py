@@ -27,7 +27,7 @@ async def handle_login():
 
     if not userid or not password:
         return {
-            "endpoint": "/error",
+            "endpoint": "/auth/login_response",
             "data": {
                 "message": "用户名和密码不能为空",
                 "code": 400
@@ -39,7 +39,7 @@ async def handle_login():
     user = await request.server.user_manager.get_user_by_id(userid)
     if not user:
         return {
-            "endpoint": "/error",
+            "endpoint": "/auth/login_response",
             "data": {
                 "message": "用户不存在",
                 "code": 401
@@ -50,7 +50,7 @@ async def handle_login():
     # 验证密码
     if not await request.server.user_manager.verify_password(user.user_id, password):
         return {
-            "endpoint": "/error",
+            "endpoint": "/auth/login_response",
             "data": {
                 "message": "密码错误",
                 "code": 401
@@ -407,6 +407,19 @@ async def handle_message_send():
         response["request_id"] = request_id
 
     await self.send_message(connection.websocket, response)
+    await server.message_manager.save_private_message({
+        "message_id": message_id,
+        "sender_id": sender_id,
+        "receiver_id": receiver_id,
+        "type": "text",
+        "content": content,
+        "timestamp": timestamp,
+        "client_msg_id": msg_data['client_msg_id'],
+        "delivered": False,
+        "read": False,
+        "created_at": datetime.datetime.now(),
+        "is_group": False
+    })
 
     # 如果未送达，存储为离线消息
     if not delivered:
@@ -586,12 +599,16 @@ async def handle_history_get():
     # 对方的user_id
     connection_id = request.connection_id
     if data['target_type'] == "user":
-        messages = await self.message_manager.get_private_messages(user_id, data.get("start_time", None),
-                                                                   data["end_time"], "user")
+        messages = await self.message_manager.get_private_messages(
+            user1_id=self.jwt_manager.get_user_id_from_token(data["token"]), user2_id=user_id,
+            start_time=data.get("start_time"),
+            limit=data.get('limit', 50), end_time=data["end_time"], )
+        print("handle_history_get", messages)
     else:
-        messages = await self.message_manager.get_group_messages(user_id, data.get("start_time", None),
+        messages = await self.message_manager.get_group_messages(user_id,
+                                                                 data.get("start_time", data.get('limit'), 50),
                                                                  data["end_time"], "group")
-    # offline_messages = await self.offline_store.get_offline_messages(user_id)
+        # offline_messages = await self.offline_store.get_offline_messages(user_id)
     return {
         "endpoint": "/history/get_response",
         "data": {
@@ -1499,6 +1516,7 @@ async def handle_group_message_send():
             "is_system": False
         }
     }
+    await server.message_manager.save_group_message(group_message)
 
     # 获取群成员
     members = await group_manager.get_group_members(group_id)
@@ -1697,11 +1715,11 @@ async def handle_offline_get():
     else:
         messages = await request.server.offline_store.get_offline_messages(user_id)
         await request.server.offline_store.clear_offline_messages(user_id)
-        for i in messages:
-            if "group_id" in i['data']:
-                await request.server.message_manager.save_group_message(i["data"])
-            else:
-                await request.server.message_manager.save_private_message(i["data"])
+        # for i in messages:
+        #     if "group_id" in i['data']:
+        #         await request.server.message_manager.save_group_message(i["data"])
+        #     else:
+        #         await request.server.message_manager.save_private_message(i["data"])
         # await request.server.message_manager.
         return {
             "endpoint": "/offline/get_response",

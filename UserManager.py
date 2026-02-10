@@ -17,6 +17,7 @@ class UserManager:
         # self._initialize_sample_users()
         self.dbclient = AsyncMongoClient(uri)
         self.db = self.dbclient["IM"]["user"]
+
     def _initialize_sample_users(self):
         """初始化示例用户"""
         sample_users = [
@@ -94,7 +95,7 @@ class UserManager:
     async def get_user_by_id(self, user_id: int) -> Optional[User]:
         """根据ID获取用户"""
         res = await self.db.find_one({"user_id": user_id})
-        return User(user_id=user_id, username=res["username"], nickname=res["nickname"],
+        return User(user_id=user_id, username=res.get("username", ""), nickname=res["nickname"],
                     password_hash=self.hash_password(res["password"], str(user_id)), avatar=res["avatar"],
                     department=res["department"], tags=res["tags"], contact_list=res["contacts"])
 

@@ -9,8 +9,8 @@ class AvatarDataBase:
     def __init__(self):
         print("Initializing Avatar Data Base")
         self.avatar_map = {
-            1: "./avatars/0001.jpg",
-            2: "./avatars/2.jpg",
+            1: "./avatars/1.png",
+            2: "./avatars/2.webp",
             3: "./avatars/3.webp",
         }
         self.group_avatar_map = {
