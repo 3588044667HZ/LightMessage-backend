@@ -13,6 +13,7 @@ class Group:
     group_id: str
     name: str
     owner_id: int  # 群主ID
+    _id: str = ""
     description: str = ""
     avatar: str = "group_default.jpg"
     created_at: int = field(default_factory=lambda: int(datetime.datetime.now().timestamp()))
@@ -28,6 +29,7 @@ class GroupMember:
     group_id: str
     user_id: int
     role: GroupRole = GroupRole.MEMBER
+    _id: str = ""
     joined_at: int = field(default_factory=lambda: int(datetime.datetime.now().timestamp()))
     nickname: str = ""  # 群昵称
     last_read_message_id: Optional[str] = None  # 最后读取的消息ID

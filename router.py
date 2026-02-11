@@ -605,9 +605,10 @@ async def handle_history_get():
             limit=data.get('limit', 50), end_time=data["end_time"], )
         print("handle_history_get", messages)
     else:
-        messages = await self.message_manager.get_group_messages(user_id,
-                                                                 data.get("start_time", data.get('limit'), 50),
-                                                                 data["end_time"], "group")
+        messages = await self.message_manager.get_group_messages(group_id=data["target_id"],
+                                                                 start_time=data.get("start_time"),
+                                                                 limit=data.get('limit', 50),
+                                                                 end_time=data["end_time"], )
         # offline_messages = await self.offline_store.get_offline_messages(user_id)
     return {
         "endpoint": "/history/get_response",

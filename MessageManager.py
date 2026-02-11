@@ -75,10 +75,10 @@ class MessageManager:
 
             message_record = {
                 "message_id": message_id,
-                "sender_id": message_data["sender_id"],
-                "group_id": message_data["group_id"],
+                "sender_id": message_data.get("sender_id", message_data.get("data").get("sender_info").get("user_id")),
+                "group_id": message_data["data"]["group_id"],
                 "type": message_data.get("type", MessageType.TEXT.value),
-                "content": message_data["content"],
+                "content": message_data["data"]["content"],
                 "timestamp": timestamp,
                 "client_msg_id": message_data.get("client_msg_id"),
                 "at_users": message_data.get("at_users", []),
@@ -88,10 +88,10 @@ class MessageManager:
             }
 
             result = await self.db_messages.insert_one(message_record)
-            self.logger.debug(f"保存群聊消息: {message_id} 群组: {message_data['group_id']}")
+            self.logger.debug(f"保存群聊消息: {message_id} 群组: {message_data['data']['group_id']}")
             return message_id
 
-        except Exception as e:
+        except DeprecationWarning as e:
             self.logger.error(f"保存群聊消息失败: {e}")
             return ""
 
