@@ -8,8 +8,9 @@ from pymongo import AsyncMongoClient
 
 from enums import GroupRole, GroupStatus
 from models import Group, GroupMember
+import config
 
-uri = "mongodb://localhost:27017/"
+uri = config.mongo_uri
 
 
 class GroupManager:

@@ -6,8 +6,9 @@ from typing import Dict, List, Optional, Any
 from pymongo import AsyncMongoClient
 from enums import MessageType
 import logging
+import config
 
-uri = "mongodb://localhost:27017/"
+uri = config.mongo_uri
 
 
 class MessageManager:

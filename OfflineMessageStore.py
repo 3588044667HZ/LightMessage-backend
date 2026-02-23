@@ -5,8 +5,9 @@ from typing import Dict, List, Any
 import logging
 from pymongo import AsyncMongoClient
 import uuid
+import config
 
-uri = "mongodb://localhost:27017/"
+uri = config.mongo_uri
 
 
 class OfflineMessageStore:

@@ -3,8 +3,9 @@ from typing import Dict, Optional, List
 
 from models import User
 from pymongo import AsyncMongoClient
+import config
 
-uri = "mongodb://localhost:27017/"
+uri = config.mongo_uri
 
 
 class UserManager:
