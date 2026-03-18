@@ -7,7 +7,7 @@ from pymongo import AsyncMongoClient
 import uuid
 import config
 
-uri = config.mongo_uri
+uri = config.Config.mongo_uri
 
 
 class OfflineMessageStore:

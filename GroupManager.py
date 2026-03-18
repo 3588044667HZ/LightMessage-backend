@@ -10,7 +10,7 @@ from enums import GroupRole, GroupStatus
 from models import Group, GroupMember
 import config
 
-uri = config.mongo_uri
+uri = config.Config.mongo_uri
 
 
 class GroupManager:

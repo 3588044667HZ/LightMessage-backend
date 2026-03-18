@@ -5,7 +5,7 @@ from models import User
 from pymongo import AsyncMongoClient
 import config
 
-uri = config.mongo_uri
+uri = config.Config.mongo_uri
 
 
 class UserManager:
